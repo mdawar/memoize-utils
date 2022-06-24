@@ -5,10 +5,17 @@
   "description": "Memoization functions and decorator.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint ./src",
+    "format": "prettier --write ./src"
   },
   "license": "ISC",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "eslint": "^8.18.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "2.7.1",
     "typescript": "^4.7.4"
   }
 }
