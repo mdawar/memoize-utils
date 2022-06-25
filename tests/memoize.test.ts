@@ -298,3 +298,33 @@ describe('Objects as arguments', () => {
     expect(await memoized({ a: 1, b: '2' })).toEqual(1);
   });
 });
+
+describe('RegExp as arguments', () => {
+  test('RegExp objects as arguments are not cached as intended', async () => {
+    const memoized = memoize(makeAsyncCounter());
+
+    expect(await memoized(/(.*)/)).toEqual(0);
+    expect(await memoized(/(.*)/)).toEqual(1); // Same object shape but different value
+    expect(await memoized(/(.*)/)).toEqual(2); // Same object shape but different value
+  });
+
+  test('Using the same RegExp object reference works', async () => {
+    const memoized = memoize(makeAsyncCounter());
+
+    const regex = /(.*)/;
+
+    expect(await memoized(regex)).toEqual(0);
+    expect(await memoized(regex)).toEqual(0);
+    expect(await memoized(regex)).toEqual(0);
+  });
+
+  test('Serializing RegExp objects using custom cache ID function', async () => {
+    const memoized = memoize(makeAsyncCounter(), { cacheId: (regex: RegExp) => regex.toString() });
+
+    expect(await memoized(/(.*)/)).toEqual(0);
+    expect(await memoized(/(.*)/)).toEqual(0);
+
+    expect(await memoized(/(.*)/gi)).toEqual(1);
+    expect(await memoized(/(.*)/gi)).toEqual(1);
+  });
+});
