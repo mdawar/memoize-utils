@@ -1,5 +1,7 @@
 import { memoize } from '../src/index.js';
 
+const ERROR_MSG = 'Failed';
+
 /** Sync function factory. */
 function makeFn() {
   let throwNext = false;
@@ -8,7 +10,7 @@ function makeFn() {
     throwNext = !throwNext;
 
     if (throwNext) {
-      throw new Error('Failed');
+      throw new Error(ERROR_MSG);
     }
 
     return true;
@@ -23,7 +25,7 @@ function makeAsyncFn() {
     throwNext = !throwNext;
 
     if (throwNext) {
-      throw new Error('Failed');
+      throw new Error(ERROR_MSG);
     }
 
     return true;
@@ -74,13 +76,46 @@ describe('Factory functions', () => {
   });
 });
 
-describe('Basic tests', () => {
-  test('Memoized function result is cached', () => {
+describe('Basic functionality', () => {
+  test('Function result is cached', () => {
     const counter = makeCounter();
-
     const memoized = memoize(counter);
 
     expect(memoized()).toEqual(0);
     expect(memoized()).toEqual(memoized());
+  });
+
+  test("Async function's memoized function returns Promise", async () => {
+    const counter = makeAsyncCounter();
+    const memoized = memoize(counter);
+
+    expect(memoized()).toBeInstanceOf(Promise);
+  });
+
+  test("Async function's promise is cached", async () => {
+    const counter = makeAsyncCounter();
+    const memoized = memoize(counter);
+
+    expect(await memoized()).toEqual(0);
+    expect(await memoized()).toEqual(await memoized());
+  });
+});
+
+describe('Errors and Promise rejections', () => {
+  test('Function throwing an error', () => {
+    const fn = makeFn();
+    const memoized = memoize(fn);
+
+    expect(() => memoized()).toThrow(ERROR_MSG);
+    expect(memoized()).toBe(true);
+  });
+
+  test('Async function promise rejection', async () => {
+    const asyncFn = makeAsyncFn();
+    const memoized = memoize(asyncFn);
+
+    await expect(memoized()).rejects.toThrow(ERROR_MSG);
+    // TODO: do not cache promise rejections by default
+    await expect(memoized()).rejects.toThrow(ERROR_MSG);
   });
 });
