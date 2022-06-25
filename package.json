@@ -9,7 +9,8 @@
     "lint": "eslint ./src",
     "format": "prettier --write ./src",
     "pretest": "npm run build",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --rootDir dist"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --rootDir dist",
+    "test-coverage": "npm run test -- --coverage"
   },
   "license": "ISC",
   "devDependencies": {
