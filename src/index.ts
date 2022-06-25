@@ -2,7 +2,10 @@ import type { AnyFunction, MemoizeOptions, MemoizedFunction } from './types.js';
 
 export function memoize<Fn extends AnyFunction, CacheID>(
   fn: Fn,
-  { cache: cacheFactory = new Map<CacheID, ReturnType<Fn>>() }: MemoizeOptions<Fn, CacheID> = {}
+  {
+    cache: cacheFactory = new Map<CacheID, ReturnType<Fn>>(),
+    cacheRejectedPromise = false,
+  }: MemoizeOptions<Fn, CacheID> = {}
 ): MemoizedFunction<Fn> {
   const cache = typeof cacheFactory === 'function' ? cacheFactory() : cacheFactory;
 
@@ -16,6 +19,16 @@ export function memoize<Fn extends AnyFunction, CacheID>(
 
     cache.set(key, value);
 
-    return value;
+    if (value instanceof Promise) {
+      return value.catch((error: unknown) => {
+        if (!cacheRejectedPromise) {
+          cache.delete(key);
+        }
+
+        throw error;
+      }) as ReturnType<Fn>;
+    } else {
+      return value;
+    }
   };
 }

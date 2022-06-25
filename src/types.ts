@@ -11,4 +11,5 @@ export interface Cache<K, V> {
 
 export interface MemoizeOptions<Fn extends AnyFunction, CacheID> {
   cache?: Cache<CacheID, ReturnType<Fn>> | (() => Cache<CacheID, ReturnType<Fn>>);
+  cacheRejectedPromise?: boolean;
 }

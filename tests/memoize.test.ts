@@ -112,12 +112,20 @@ describe('Errors and Promise rejections', () => {
     expect(memoized()).toBe(true);
   });
 
-  test('Async function promise rejection', async () => {
+  test("Async function's rejected promise not cached by default", async () => {
     const asyncFn = makeAsyncFn();
     const memoized = memoize(asyncFn);
 
     await expect(memoized()).rejects.toThrow(ERROR_MSG);
-    // TODO: do not cache promise rejections by default
+    // Rejected promises are not cached by default
+    await expect(memoized()).resolves.toBe(true);
+  });
+
+  test("Async function's rejected promise cached on demand", async () => {
+    const asyncFn = makeAsyncFn();
+    const memoized = memoize(asyncFn, { cacheRejectedPromise: true });
+
+    await expect(memoized()).rejects.toThrow(ERROR_MSG);
     await expect(memoized()).rejects.toThrow(ERROR_MSG);
   });
 });
