@@ -1,5 +1,19 @@
 import type { AnyFunction, MemoizeOptions, MemoizedFunction, CacheContent } from './types.js';
 
+/**
+ * [Memoize](https://en.wikipedia.org/wiki/Memoization) function - Cache results of expensive function calls.
+ *
+ * The memoized function returns the cached result when the same inputs occur again.
+ *
+ * @param fn - Function to cache its results.
+ * @param options - Memoization options.
+ * @param options.maxAge - Cached result expiration duration in milliseconds.
+ * @param options.cache - Custom cache instance or function returning a cache instance.
+ * @param options.cacheId - Custom cache ID function, to be used to determine the ID of the cached result.
+ * @param options.cacheRejectedPromise - Cache the rejected promise when memoizing an async function.
+ * @param options.cacheFromContext - Function returning a custom cache instance that has access to the original function's context `this`.
+ * @returns Memoized function.
+ */
 export function memoize<Fn extends AnyFunction, CacheID>(
   fn: Fn,
   {

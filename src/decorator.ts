@@ -2,6 +2,17 @@ import type { AnyFunction, MemoizeOptions, Cache, CacheContent } from './types.j
 
 import { memoize } from './index.js';
 
+/**
+ * [Memoize](https://en.wikipedia.org/wiki/Memoization) decorator - Cache results of expensive class methods and getters.
+ *
+ * @param options - Memoization options.
+ * @param options.maxAge - Cached result expiration duration in milliseconds.
+ * @param options.cache - Custom cache instance or function returning a cache instance.
+ * @param options.cacheId - Custom cache ID function, to be used to determine the ID of the cached result.
+ * @param options.cacheRejectedPromise - Cache the rejected promise when memoizing an async function.
+ * @param options.cacheFromContext - Function returning a custom cache instance that has access to the original function's context `this`.
+ * @returns Memoized function.
+ */
 export function memoizeDecorator<Fn extends AnyFunction, CacheID>(
   options: MemoizeOptions<Fn, CacheID> = {}
 ) {
