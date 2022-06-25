@@ -352,3 +352,28 @@ describe('RegExp as arguments', () => {
     expect(await memoized(/(.*)/gi)).toEqual(1);
   });
 });
+
+describe('Cache from context', () => {
+  test('Using the context to get the cache instance', () => {
+    const context = { cache: new Map() };
+
+    const memoized = memoize(makeCounter(), {
+      cacheFromContext(this: any) {
+        return this.cache;
+      },
+    }).bind(context);
+
+    expect(memoized()).toEqual(0);
+    expect(memoized()).toEqual(0);
+    expect(context.cache.size).toBe(1);
+
+    expect(memoized('')).toEqual(1);
+    expect(memoized('')).toEqual(1);
+    expect(context.cache.size).toBe(2);
+
+    context.cache.clear();
+
+    expect(memoized()).toEqual(2);
+    expect(memoized('')).toEqual(3);
+  });
+});

@@ -21,4 +21,5 @@ export interface MemoizeOptions<Fn extends AnyFunction, CacheID> {
   cache?: Cache<CacheID, CacheContent<Fn>> | (() => Cache<CacheID, CacheContent<Fn>>);
   cacheId?: (...args: Parameters<Fn>) => CacheID;
   cacheRejectedPromise?: boolean;
+  cacheFromContext?: () => Cache<CacheID, CacheContent<Fn>>;
 }

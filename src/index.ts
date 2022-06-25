@@ -7,11 +7,13 @@ export function memoize<Fn extends AnyFunction, CacheID>(
     cache: cacheFactory = new Map<CacheID, CacheContent<Fn>>(),
     cacheId,
     cacheRejectedPromise = false,
+    cacheFromContext,
   }: MemoizeOptions<Fn, CacheID> = {}
 ): MemoizedFunction<Fn> {
-  const cache = typeof cacheFactory === 'function' ? cacheFactory() : cacheFactory;
+  const globalCache = typeof cacheFactory === 'function' ? cacheFactory() : cacheFactory;
 
   const memoized = function (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) {
+    const cache = cacheFromContext?.call(this) ?? globalCache;
     // Default to first argument
     const key = cacheId ? cacheId(...args) : (args[0] as CacheID);
 
