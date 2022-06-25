@@ -2,15 +2,29 @@
   "name": "memoize-utils",
   "version": "1.0.0",
   "type": "module",
-  "description": "Memoization functions and decorator.",
-  "main": "dist/index.js",
+  "description": "Memoization function and decorator.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/src/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/src/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./*": {
+      "import": "./dist/esm/src/*.js",
+      "require": "./dist/cjs/*.js"
+    }
+  },
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -r ./dist",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc -p tsconfig-cjs.json && echo '{\"type\": \"commonjs\"}' > ./dist/cjs/package.json",
     "lint": "eslint ./src",
     "format": "prettier --write ./src",
     "pretest": "npm run build",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --rootDir dist",
-    "test-coverage": "npm run test -- --coverage"
+    "test:coverage": "npm run test -- --coverage"
   },
   "license": "ISC",
   "devDependencies": {
