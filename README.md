@@ -6,8 +6,8 @@ Used to cache expensive function calls, it supports cache expiration and custom 
 
 Provides:
 
-- `memoize`: Used to memoize any sync or `async` function.
-- `memoizeDecorator`: TypeScript decorator used to memoize class methods and getters.
+- `memoize` Function: Used to memoize any sync or `async` function.
+- `memoize` Decorator: TypeScript decorator used to memoize class methods and getters.
 
 ## Installation
 
@@ -45,7 +45,7 @@ await memoizedFetchIP();
 Memoizing class methods and getters:
 
 ```js
-import { memoizeDecorator as memoize } from 'memoize-utils/decorator';
+import { memoize } from 'memoize-utils/decorator';
 
 class ExampleClass {
   @memoize({ maxAge: 2000 })

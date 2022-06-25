@@ -56,7 +56,7 @@ export interface MemoizeOptions<Fn extends AnyFunction, CacheID> {
    *
    * This function is called on every memoized function's call to retrieve the cache instance.
    *
-   * For example this function is used for the `memoizeDecorator` to provide a separate cache
+   * For example this function is used for the `memoize` decorator to provide a separate cache
    * instance for each class instance.
    */
   cacheFromContext?: () => Cache<CacheID, CacheContent<Fn>>;

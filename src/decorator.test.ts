@@ -1,11 +1,11 @@
-import { memoizeDecorator } from './decorator.js';
+import { memoize } from './decorator.js';
 
 describe('Decorating class properties', () => {
   test('Decorating class property throws an error', () => {
     expect(() => {
       class TestClass {
         // @ts-expect-error Unable to resolve signature of property decorator
-        @memoizeDecorator()
+        @memoize()
         prop = 10;
       }
     }).toThrow('decorator can only be used');
@@ -17,7 +17,7 @@ describe('Decorating class method', () => {
     class TestClass {
       constructor(public index: number) {}
 
-      @memoizeDecorator()
+      @memoize()
       count(...args: any[]) {
         return this.index++;
       }
@@ -35,7 +35,7 @@ describe('Decorating class method', () => {
     class TestClass {
       constructor(public index: number) {}
 
-      @memoizeDecorator()
+      @memoize()
       async count(...args: any[]) {
         return this.index++;
       }
@@ -55,7 +55,7 @@ describe('Decorating class getter', () => {
     class TestClass {
       constructor(public index: number) {}
 
-      @memoizeDecorator()
+      @memoize()
       get count() {
         return this.index++;
       }
@@ -72,7 +72,7 @@ describe('Decorating class getter', () => {
     class TestClass {
       constructor(public index: number) {}
 
-      @memoizeDecorator()
+      @memoize()
       get count() {
         return Promise.resolve(this.index++);
       }
@@ -91,7 +91,7 @@ describe('Decorator cache instance', () => {
     class TestClass {
       constructor(public index: number) {}
 
-      @memoizeDecorator()
+      @memoize()
       async count() {
         return this.index++;
       }
@@ -117,12 +117,12 @@ describe('Decorator cache instance', () => {
     class TestClass {
       constructor(public index: number) {}
 
-      @memoizeDecorator()
+      @memoize()
       count1() {
         return this.index++;
       }
 
-      @memoizeDecorator()
+      @memoize()
       count2() {
         return this.index++;
       }
@@ -145,7 +145,7 @@ describe('Custom cache instance', () => {
       constructor(public index: number) {}
 
       // Using the same cache instance
-      @memoizeDecorator({ cache })
+      @memoize({ cache })
       async count() {
         return this.index++;
       }
@@ -174,7 +174,7 @@ describe('Custom cache instance', () => {
       constructor(public index: number) {}
 
       // Creates a new cache instance for each class instance
-      @memoizeDecorator({ cache: cacheFactory })
+      @memoize({ cache: cacheFactory })
       async count() {
         return this.index++;
       }
