@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 
-import { memoize } from '../src/index.js';
+import { memoize } from './index.js';
 
 const ERROR_MSG = 'Failed';
 

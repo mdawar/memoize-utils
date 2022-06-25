@@ -1,4 +1,4 @@
-import { memoizeDecorator } from '../src/decorator.js';
+import { memoizeDecorator } from './decorator.js';
 
 describe('Decorating class properties', () => {
   test('Decorating class property throws an error', () => {

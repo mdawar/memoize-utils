@@ -6,12 +6,12 @@
     "moduleResolution": "node",
     "declaration": true,
     "declarationMap": true,
+    "rootDir": "./src",
     "outDir": "./dist/esm",
     "removeComments": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true
-  },
-  "include": ["src", "tests"]
+  }
 }

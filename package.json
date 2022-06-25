@@ -4,14 +4,14 @@
   "type": "module",
   "description": "Memoization function and decorator.",
   "main": "dist/cjs/index.js",
-  "module": "dist/esm/src/index.js",
+  "module": "dist/esm/index.js",
   "exports": {
     ".": {
-      "import": "./dist/esm/src/index.js",
+      "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
     },
     "./*": {
-      "import": "./dist/esm/src/*.js",
+      "import": "./dist/esm/*.js",
       "require": "./dist/cjs/*.js"
     }
   },
