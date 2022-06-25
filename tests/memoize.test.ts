@@ -101,6 +101,25 @@ describe('Basic functionality', () => {
     expect(await memoized()).toEqual(0);
     expect(await memoized()).toEqual(await memoized());
   });
+
+  test('Context bound to memoized function is passed to the original function', async () => {
+    async function originalFunction(this: any, ...agrs: any[]) {
+      return ++this.index;
+    }
+
+    const context = { index: 0 };
+
+    const memoized = memoize(originalFunction).bind(context);
+
+    expect(await memoized()).toEqual(1);
+    expect(context).toEqual({ index: 1 });
+
+    expect(await memoized()).toEqual(await memoized());
+    expect(context).toEqual({ index: 1 });
+
+    expect(await memoized('')).toEqual(2);
+    expect(context).toEqual({ index: 2 });
+  });
 });
 
 describe('Errors and Promise rejections', () => {
