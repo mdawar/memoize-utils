@@ -9,7 +9,15 @@ export interface Cache<K, V> {
   delete(key: K): boolean;
 }
 
+export interface CachedData<ValueType> {
+  value: ValueType;
+  timestamp: number;
+}
+
+export type CacheContent<Fn extends AnyFunction> = CachedData<ReturnType<Fn>>;
+
 export interface MemoizeOptions<Fn extends AnyFunction, CacheID> {
-  cache?: Cache<CacheID, ReturnType<Fn>> | (() => Cache<CacheID, ReturnType<Fn>>);
+  maxAge?: number;
+  cache?: Cache<CacheID, CacheContent<Fn>> | (() => Cache<CacheID, CacheContent<Fn>>);
   cacheRejectedPromise?: boolean;
 }

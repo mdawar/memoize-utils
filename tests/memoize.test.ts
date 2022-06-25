@@ -164,3 +164,44 @@ describe('Custom cache', () => {
     expect(cache.size).toBe(2);
   });
 });
+
+describe('Cache expiration', () => {
+  test('Cache expires when maxAge is defined', async () => {
+    const memoized = memoize(makeAsyncCounter(), { maxAge: 5000 });
+
+    const now = Date.now();
+
+    jest.useFakeTimers({ now });
+    expect(await memoized()).toBe(0);
+
+    // Less than the expiration time
+    jest.useFakeTimers({ now: now + 2000 });
+    expect(await memoized()).toBe(0); // cached
+
+    // Exact expiration time
+    jest.useFakeTimers({ now: now + 5000 });
+    expect(await memoized()).toBe(0); // cached
+
+    // Expired
+    jest.useFakeTimers({ now: now + 5001 });
+    expect(await memoized()).toBe(1); // new value
+
+    jest.useRealTimers();
+  });
+
+  test('Cache expires immediately when maxAge is set to 0', async () => {
+    const memoized = memoize(makeAsyncCounter(), { maxAge: 0 });
+
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(1);
+    expect(await memoized()).toBe(2);
+  });
+
+  test('Cache does not expire when maxAge is set to NaN', async () => {
+    const memoized = memoize(makeAsyncCounter(), { maxAge: NaN });
+
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(0);
+  });
+});

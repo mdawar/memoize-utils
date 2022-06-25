@@ -1,9 +1,10 @@
-import type { AnyFunction, MemoizeOptions, MemoizedFunction } from './types.js';
+import type { AnyFunction, MemoizeOptions, MemoizedFunction, CacheContent } from './types.js';
 
 export function memoize<Fn extends AnyFunction, CacheID>(
   fn: Fn,
   {
-    cache: cacheFactory = new Map<CacheID, ReturnType<Fn>>(),
+    maxAge,
+    cache: cacheFactory = new Map<CacheID, CacheContent<Fn>>(),
     cacheRejectedPromise = false,
   }: MemoizeOptions<Fn, CacheID> = {}
 ): MemoizedFunction<Fn> {
@@ -13,11 +14,23 @@ export function memoize<Fn extends AnyFunction, CacheID>(
     // TODO: use hash function
     const key = args[0] as CacheID;
 
-    if (cache.has(key)) return cache.get(key)!;
+    // Return cached value if available and hasn't expired
+    if (cache.has(key)) {
+      const cached = cache.get(key)!;
+
+      const isExpired =
+        typeof maxAge === 'number' && typeof cached?.timestamp === 'number'
+          ? maxAge === 0 || Date.now() - cached.timestamp > maxAge
+          : false;
+
+      if (!isExpired) {
+        return cached?.value;
+      }
+    }
 
     const value = fn.apply(this, args) as ReturnType<Fn>;
 
-    cache.set(key, value);
+    cache.set(key, { value, timestamp: Date.now() });
 
     if (value instanceof Promise) {
       return value.catch((error: unknown) => {
