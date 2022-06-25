@@ -265,3 +265,36 @@ describe('Custom cache ID', () => {
     expect(await memoized('a', 'b', 1)).toEqual(0);
   });
 });
+
+describe('Objects as arguments', () => {
+  test('Objects as arguments are not cached as intended', async () => {
+    const memoized = memoize(makeAsyncCounter());
+
+    expect(await memoized({})).toEqual(0);
+    expect(await memoized({})).toEqual(1); // Same object shape but different value
+    expect(await memoized({})).toEqual(2); // Same object shape but different value
+  });
+
+  test('Using the same object reference works', async () => {
+    const memoized = memoize(makeAsyncCounter());
+
+    const obj = {};
+
+    expect(await memoized(obj)).toEqual(0);
+    expect(await memoized(obj)).toEqual(0);
+    expect(await memoized(obj)).toEqual(0);
+  });
+
+  test('Objects as arguments with JSON serialization for cache ID', async () => {
+    const memoized = memoize(makeAsyncCounter(), {
+      cacheId: (...args) => JSON.stringify(args),
+    });
+
+    expect(await memoized({})).toEqual(0);
+    expect(await memoized({})).toEqual(0);
+    expect(await memoized({})).toEqual(0);
+
+    expect(await memoized({ a: 1, b: '2' })).toEqual(1);
+    expect(await memoized({ a: 1, b: '2' })).toEqual(1);
+  });
+});
