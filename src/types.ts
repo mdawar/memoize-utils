@@ -19,5 +19,6 @@ export type CacheContent<Fn extends AnyFunction> = CachedData<ReturnType<Fn>>;
 export interface MemoizeOptions<Fn extends AnyFunction, CacheID> {
   maxAge?: number;
   cache?: Cache<CacheID, CacheContent<Fn>> | (() => Cache<CacheID, CacheContent<Fn>>);
+  cacheId?: (...args: Parameters<Fn>) => CacheID;
   cacheRejectedPromise?: boolean;
 }

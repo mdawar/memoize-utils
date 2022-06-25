@@ -231,3 +231,37 @@ describe('Cache expiration', () => {
     expect(await memoized()).toBe(0);
   });
 });
+
+describe('Custom cache ID', () => {
+  test('First argument is used for the cache ID by default', async () => {
+    const memoized = memoize(makeAsyncCounter());
+
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('a', 'b')).toEqual(0);
+  });
+
+  test('Using a custom cache ID function', async () => {
+    const memoized = memoize(makeAsyncCounter(), {
+      cacheId: (...args) => args.map(String).join('-'),
+    });
+
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('a')).toEqual(0);
+
+    expect(await memoized('a', 'b')).toEqual(1);
+    expect(await memoized('a', 'b')).toEqual(1);
+
+    expect(await memoized('a', 'b', 1)).toEqual(2);
+    expect(await memoized('a', 'b', 1)).toEqual(2);
+  });
+
+  test('Using a single cache ID', async () => {
+    const memoized = memoize(makeAsyncCounter(), {
+      cacheId: () => 'same',
+    });
+
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('a', 'b')).toEqual(0);
+    expect(await memoized('a', 'b', 1)).toEqual(0);
+  });
+});

@@ -5,14 +5,15 @@ export function memoize<Fn extends AnyFunction, CacheID>(
   {
     maxAge,
     cache: cacheFactory = new Map<CacheID, CacheContent<Fn>>(),
+    cacheId,
     cacheRejectedPromise = false,
   }: MemoizeOptions<Fn, CacheID> = {}
 ): MemoizedFunction<Fn> {
   const cache = typeof cacheFactory === 'function' ? cacheFactory() : cacheFactory;
 
   const memoized = function (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) {
-    // TODO: use hash function
-    const key = args[0] as CacheID;
+    // Default to first argument
+    const key = cacheId ? cacheId(...args) : (args[0] as CacheID);
 
     // Return cached value if available and hasn't expired
     if (cache.has(key)) {
