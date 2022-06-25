@@ -1,7 +1,10 @@
-import type { AnyFunction, MemoizedFunction } from './types.js';
+import type { AnyFunction, MemoizeOptions, MemoizedFunction } from './types.js';
 
-export function memoize<Fn extends AnyFunction, CacheID>(fn: Fn): MemoizedFunction<Fn> {
-  const cache = new Map<CacheID, ReturnType<Fn>>();
+export function memoize<Fn extends AnyFunction, CacheID>(
+  fn: Fn,
+  { cache: cacheFactory = new Map<CacheID, ReturnType<Fn>>() }: MemoizeOptions<Fn, CacheID> = {}
+): MemoizedFunction<Fn> {
+  const cache = typeof cacheFactory === 'function' ? cacheFactory() : cacheFactory;
 
   return function (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) {
     // TODO: use hash function

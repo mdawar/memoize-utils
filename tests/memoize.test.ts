@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 import { memoize } from '../src/index.js';
 
 const ERROR_MSG = 'Failed';
@@ -117,5 +119,40 @@ describe('Errors and Promise rejections', () => {
     await expect(memoized()).rejects.toThrow(ERROR_MSG);
     // TODO: do not cache promise rejections by default
     await expect(memoized()).rejects.toThrow(ERROR_MSG);
+  });
+});
+
+describe('Custom cache', () => {
+  test('Using a custom cache', async () => {
+    const cache = new Map();
+    const memoized = memoize(makeAsyncCounter(), { cache });
+
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('b')).toEqual(1);
+    expect(await memoized('b')).toEqual(1);
+
+    expect(cache.size).toBe(2);
+
+    cache.clear();
+
+    expect(await memoized('a')).toEqual(2);
+    expect(await memoized('b')).toEqual(3);
+  });
+
+  test('Using a cache factory function', async () => {
+    const cache = new Map();
+    const cacheFactoryMock = jest.fn(() => cache);
+    const memoized = memoize(makeAsyncCounter(), { cache: cacheFactoryMock });
+
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('a')).toEqual(0);
+    expect(await memoized('b')).toEqual(1);
+    expect(await memoized('b')).toEqual(1);
+
+    expect(cacheFactoryMock).toHaveBeenCalledTimes(1);
+    expect(cacheFactoryMock).toHaveBeenCalledWith();
+
+    expect(cache.size).toBe(2);
   });
 });
