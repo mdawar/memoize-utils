@@ -230,6 +230,23 @@ describe('Cache expiration', () => {
     expect(await memoized()).toBe(0);
     expect(await memoized()).toBe(0);
   });
+
+  test('Cache does not expire when maxAge is set to undefined', async () => {
+    const memoized = memoize(makeAsyncCounter(), { maxAge: undefined });
+
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(0);
+  });
+
+  test('Cache does not expire when maxAge is set to null', async () => {
+    // @ts-expect-error Using `null` for `maxAge`
+    const memoized = memoize(makeAsyncCounter(), { maxAge: null });
+
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(0);
+    expect(await memoized()).toBe(0);
+  });
 });
 
 describe('Custom cache ID', () => {
