@@ -87,7 +87,14 @@ describe('Basic functionality', () => {
     expect(memoized()).toEqual(memoized());
   });
 
-  test("Async function's memoized function returns Promise", async () => {
+  test("Sync function's memoized function does not return a Promise", () => {
+    const counter = makeCounter();
+    const memoized = memoize(counter);
+
+    expect(memoized()).not.toBeInstanceOf(Promise);
+  });
+
+  test("Async function's memoized function returns a Promise", async () => {
     const counter = makeAsyncCounter();
     const memoized = memoize(counter);
 
