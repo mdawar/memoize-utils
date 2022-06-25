@@ -120,6 +120,13 @@ describe('Basic functionality', () => {
     expect(await memoized('')).toEqual(2);
     expect(context).toEqual({ index: 2 });
   });
+
+  test('Function name is preserved', () => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(memoize(async function example() {}).name).toEqual('example');
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(memoize(() => {}).name).toEqual('');
+  });
 });
 
 describe('Errors and Promise rejections', () => {

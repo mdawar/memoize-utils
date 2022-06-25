@@ -10,7 +10,7 @@ export function memoize<Fn extends AnyFunction, CacheID>(
 ): MemoizedFunction<Fn> {
   const cache = typeof cacheFactory === 'function' ? cacheFactory() : cacheFactory;
 
-  return function (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) {
+  const memoized = function (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) {
     // TODO: use hash function
     const key = args[0] as CacheID;
 
@@ -44,4 +44,9 @@ export function memoize<Fn extends AnyFunction, CacheID>(
       return value;
     }
   };
+
+  // Keep the original function's name
+  Object.defineProperty(memoized, 'name', { value: fn.name });
+
+  return memoized;
 }
