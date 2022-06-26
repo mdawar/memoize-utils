@@ -13,29 +13,10 @@ import { memoize as memoizeFn } from './index.js';
  * @param options.cacheFromContext - Function returning a custom cache instance that has access to the original function's context `this`.
  * @returns Memoized class method or getter.
  */
-export function memoize<Fn extends AnyFunction, CacheID>(
-  options: MemoizeOptions<Fn, CacheID> = {}
-) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor): void {
-    if (typeof descriptor?.value === 'function') {
-      // Method
-      descriptor.value = createMemoizedFn(descriptor.value, options);
-    } else if (typeof descriptor?.get === 'function') {
-      // Accessor
-      descriptor.get = createMemoizedFn(descriptor.get, options);
-    } else {
-      throw new Error('Memoize decorator can only be used on a method or a getter.');
-    }
-  };
-}
-
-function createMemoizedFn<Fn extends AnyFunction, CacheID>(
-  fn: Fn,
-  {
-    cache = () => new Map<CacheID, CacheContent<Fn>>(),
-    ...options
-  }: MemoizeOptions<Fn, CacheID> = {}
-) {
+export function memoize<Fn extends AnyFunction, CacheID>({
+  cache = () => new Map<CacheID, CacheContent<Fn>>(),
+  ...options
+}: MemoizeOptions<Fn, CacheID> = {}) {
   const cacheMap = new WeakMap<object, Cache<CacheID, CacheContent<Fn>>>();
 
   // In this case `this` is going to be the class instance
@@ -47,5 +28,15 @@ function createMemoizedFn<Fn extends AnyFunction, CacheID>(
     return cacheMap.get(this)!;
   }
 
-  return memoizeFn(fn, { cacheFromContext, ...options });
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor): void {
+    if (typeof descriptor?.value === 'function') {
+      // Method
+      descriptor.value = memoizeFn(descriptor.value as Fn, { cacheFromContext, ...options });
+    } else if (typeof descriptor?.get === 'function') {
+      // Accessor
+      descriptor.get = memoizeFn(descriptor.get as Fn, { cacheFromContext, ...options });
+    } else {
+      throw new Error('Memoize decorator can only be used on a method or a getter.');
+    }
+  };
 }
