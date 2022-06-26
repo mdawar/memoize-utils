@@ -93,6 +93,25 @@ await instance.fetchIP(); // Cached
 instance.result;
 ```
 
+## Options
+
+| Option                 | Description                                                                                                       | Default     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------- |
+| `maxAge`               | Cached result expiration duration in milliseconds.                                                                | `undefined` |
+| `cache`                | Custom cache instance or a factory function returning a cache instance.                                           | `new Map()` |
+| `cacheId`              | Custom cache ID function, to be used to determine the ID of the cached result (Defaults to first argument as ID). | `undefined` |
+| `cacheRejectedPromise` | Cache the rejected promise when memoizing an `async` function.                                                    | `false`     |
+| `cacheFromContext`     | Function returning a custom cache instance that has access to the original function's context `this`.             | `undefined` |
+
+## Cache Expiration
+
+Cached results are stored with a timestamp, the `maxAge` option can be passed when creating the memoized function to set the expiration duration of the cache.
+The cache expiration is checked when the cache is accessed, so there are no timers that clear the cache automatically, if you need this functionality you can pass a custom `cache` object that supports it.
+
+```js
+const memoized = memoize(expensiveFunction, { maxAge: 60 * 60 * 1000 }); // Cache results for 1 hour
+```
+
 ## Custom Cache
 
 By default a [`Map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object is used to store the cached results, any object that implements a similar API can be used instead, for example [`WeakMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
@@ -114,15 +133,6 @@ Required `cache` object methods:
 - `.get(key)`
 - `.has(key)`
 - `.delete(key)`
-
-## Cache Expiration
-
-Cached results are stored with a timestamp, the `maxAge` option can be passed when creating the memoized function to set the expiration duration of the cache.
-The cache expiration is checked when the cache is accessed, so there are no timers that clear the cache automatically, if you need this functionality you can pass a custom `cache` object that supports it.
-
-```js
-const memoized = memoize(expensiveFunction, { maxAge: 60 * 60 * 1000 }); // Cache results for 1 hour
-```
 
 ## Cache ID
 
