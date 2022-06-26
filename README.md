@@ -1,5 +1,7 @@
 # memoize-utils
 
+[![npm](https://img.shields.io/npm/v/memoize-utils)](https://www.npmjs.com/package/memoize-utils)
+
 [Memoize](https://en.wikipedia.org/wiki/Memoization) sync and async functions (Returning a `Promise`).
 
 Used to cache expensive function calls and return the cached result when the same inputs occur again.
