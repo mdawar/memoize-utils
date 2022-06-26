@@ -2,12 +2,18 @@
 
 [Memoize](https://en.wikipedia.org/wiki/Memoization) sync and async functions (Returning a `Promise`).
 
-Used to cache expensive function calls, it supports cache expiration and custom cache objects.
+Used to cache expensive function calls and return the cached result when the same inputs occur again.
 
 Provides:
 
 - `memoize` Function: Used to memoize any sync or `async` function.
-- `memoize` Decorator: TypeScript decorator used to memoize class methods and getters.
+- `memoize` Decorator: **TypeScript** decorator used to memoize class methods and getters.
+
+Can be use to:
+
+- Cache expensive function calls
+- Prevent hitting rate limits on an API when the result can be cached
+- Speed up programs and prevent unnecessary computations and bandwidth usage
 
 ## Installation
 
@@ -22,24 +28,41 @@ Memoizing a function:
 ```js
 import { memoize } from 'memoize-utils';
 
+// Works with sync and async functions
+function expensiveFunction() {
+  // Some expensive operation that we want to cache its result
+  return result;
+}
+
+const memoized = memoize(expensiveFunction);
+
+memoized();
+memoized(); // Returns cached result
+```
+
+Example with cache expiration:
+
+```js
+import { memoize } from 'memoize-utils';
+
 async function fetchIP() {
   const response = await fetch('http://httpbin.org/ip');
   return response.json();
 }
 
-const memoizedFetchIP = memoize(fetchIP, { maxAge: 2000 });
+const memoized = memoize(fetchIP, { maxAge: 2000 }); // Expires after 2 seconds
 
 // The first request is cached
-await memoizedFetchIP();
+await memoized();
 
 // Subsequent calls return the cached result
-await memoizedFetchIP();
+await memoized();
 
 // Delay 2 seconds
 await new Promise((resolve) => setTimeout(resolve, 2000));
 
 // Cache has expired, make a new request and cache the result
-await memoizedFetchIP();
+await memoized();
 ```
 
 Memoizing class methods and getters:
@@ -56,7 +79,7 @@ class ExampleClass {
 
   @memoize({ maxAge: 60 * 60 * 1000 })
   get result() {
-    // Some expensive operation
+    // ...
   }
 }
 
@@ -72,7 +95,7 @@ instance.result;
 
 ## Custom Cache
 
-By default a `Map()` object is used to store the cached results, any object that implements a similar API can be used instead, for example `WeakMap`.
+By default a [`Map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object is used to store the cached results, any object that implements a similar API can be used instead, for example [`WeakMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
 
 ```js
 const cache = new WeakMap();
@@ -85,9 +108,16 @@ const memoized = memoize(expensiveFunction, {
 });
 ```
 
+Required `cache` object methods:
+
+- `.set(key, value)`
+- `.get(key)`
+- `.has(key)`
+- `.delete(key)`
+
 ## Cache Expiration
 
-Cached results are stored with a timestamp, a `maxAge` option may be passed when creating the memoized function to set the expiration duration of the cache.
+Cached results are stored with a timestamp, the `maxAge` option can be passed when creating the memoized function to set the expiration duration of the cache.
 The cache expiration is checked when the cache is accessed, so there are no timers that clear the cache automatically, if you need this functionality you can pass a custom `cache` object that supports it.
 
 ```js
@@ -96,7 +126,7 @@ const memoized = memoize(expensiveFunction, { maxAge: 60 * 60 * 1000 }); // Cach
 
 ## Cache ID
 
-By default the first argument of the memoized function is used as the cache ID used to store the result.
+By default the first argument of the memoized function is used as the cache ID to store the result.
 
 ```js
 const memoized = memoize(expensiveFunction);
@@ -110,16 +140,54 @@ memoized('a', 'b', 1); // Cached
 To use all the arguments as the cache ID, we can pass a `cacheId` function:
 
 ```js
+function expensiveFunction(a, b, c) {
+  // ...
+}
+
 const memoized = memoize(expensiveFunction, {
   // The cacheId function accepts the same arguments as the original function
-  // Using `JSON.stringify` assuming all the arguments are JSON serializable
-  cacheId: (...args) => JSON.stringify(args),
+  cacheId: (...args) => args.map(String).join('-'),
 });
 
 // In this case, each of these calls is cached separately
 memoized('a');
 memoized('a', 'b');
 memoized('a', 'b', 1);
+```
+
+Object arguments require serialization, for example using `JSON.stringify` or any other serialization method.
+
+```js
+function expensiveFunction(a = {}, b = null, c = true) {
+  // ...
+}
+
+const memoized = memoize(expensiveFunction, {
+  // Assuming all the arguments are JSON serializable
+  cacheId: (...args) => JSON.stringify(args),
+});
+
+// Without serialization these calls wouldn't be considered the same
+memoized({});
+memoized({}); // Cached
+memoized({}); // Cached
+```
+
+`RegExp` as arguments also must be serialized, for simplicity we can use `RegExp.toString()`.
+
+```js
+function expensiveFunction(a) {
+  // ...
+}
+
+const memoized = memoize(expensiveFunction, {
+  cacheId: (a) => a.toString(),
+});
+
+// Without serialization these calls wouldn't be considered the same
+memoized(/(.*)/);
+memoized(/(.*)/); // Cached
+memoized(/(.*)/); // Cached
 ```
 
 ## Rejected Promises
@@ -129,13 +197,13 @@ If you want to also cache rejected promises, you can use the `cacheRejectedPromi
 
 ```js
 // Cache rejected promises
-// You might want to use it with `maxAge` so the result expires at some point and the function call is retried
+// You might want to use it with `maxAge` so the result expires at some point and the original function call again
 const memoized = memoize(expensiveFunction, { cacheRejectedPromise: true });
 ```
 
 ## Cache From Context
 
-If your cache instance requires the original function's context (`this`), you can use `cacheFromContext` function that have access to same context as the original function and return a cache instance.
+If your cache instance requires the original function's context (`this`), you can use `cacheFromContext` function that has access to the same context as the original function and return a cache instance.
 For example this function is used to implement the decorator which uses a separate cache for each class instance.
 
 ```js
