@@ -26,7 +26,6 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --rootDir dist",
     "test:coverage": "npm run test -- --coverage"
   },
-  "license": "ISC",
   "devDependencies": {
     "@types/jest": "^28.1.3",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
@@ -36,5 +35,30 @@
     "jest": "^28.1.1",
     "prettier": "2.7.1",
     "typescript": "^4.7.4"
-  }
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Pierre Mdawar",
+    "email": "pierre@mdawar.dev",
+    "url": "https://mdawar.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdawar/memoize-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mdawar/memoize-utils/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "memoize",
+    "cache",
+    "memoize decorator",
+    "TypeScript decorator",
+    "async memoize",
+    "function caching",
+    "promise"
+  ]
 }
