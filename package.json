@@ -50,7 +50,10 @@
     "url": "https://github.com/mdawar/memoize-utils/issues"
   },
   "files": [
-    "dist"
+    "dist/cjs/*",
+    "!dist/cjs/*.test.*",
+    "dist/esm/*",
+    "!dist/esm/*.test.*"
   ],
   "keywords": [
     "memoize",
