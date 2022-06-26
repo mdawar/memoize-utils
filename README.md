@@ -231,6 +231,12 @@ const memoized = memoize(expensiveFunction, { cacheFromContext });
 
 ## Decorator Support
 
+The [`moduleResolution`](https://www.typescriptlang.org/tsconfig#moduleResolution) config option must be set to `node16` to be able to import the decorator.
+
+```ts
+import { memoize } from 'memoize-utils/decorator';
+```
+
 To enable support for [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) in your TypeScript project:
 
 - The `experimentalDecorators` TypeScript config must be set to `true` in the `tsconfig.json` file:
