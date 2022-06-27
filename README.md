@@ -4,14 +4,14 @@
 
 [Memoize](https://en.wikipedia.org/wiki/Memoization) sync and async functions (Returning a `Promise`).
 
-Used to cache expensive function calls and return the cached result when the same inputs occur again.
+Cache expensive function calls and return the cached result when the same inputs occur again.
 
-Provides:
+This package provides:
 
 - `memoize` Function: Used to memoize any sync or `async` function.
 - `memoize` Decorator: **TypeScript** decorator used to memoize class methods and getters.
 
-Can be use to:
+Can be used to:
 
 - Cache expensive function calls
 - Prevent hitting rate limits on an API when the result can be cached
@@ -99,11 +99,31 @@ instance.result;
 
 | Option                 | Description                                                                                                       | Default     |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------- |
-| `maxAge`               | Cached result expiration duration in milliseconds.                                                                | `undefined` |
+| `maxAge`               | Cached results expiration duration in milliseconds (Defaults to no expiration).                                   | `undefined` |
 | `cache`                | Custom cache instance or a factory function returning a cache instance.                                           | `new Map()` |
 | `cacheId`              | Custom cache ID function, to be used to determine the ID of the cached result (Defaults to first argument as ID). | `undefined` |
 | `cacheRejectedPromise` | Cache the rejected promise when memoizing an `async` function.                                                    | `false`     |
 | `cacheFromContext`     | Function returning a custom cache instance that has access to the original function's context `this`.             | `undefined` |
+
+To customize these defaults, you can create a wrapper function:
+
+```js
+import { memoize as memoizeFn } from 'memoize-utils';
+
+export function memoize(fn, options) {
+  const defaults = {
+    maxAge: 60 * 60 * 1000, // Cache expires in 1 hour
+    cache: new LRUCache(), // Use a custom cache instance
+    cacheId: (obj) => obj.id, // Use a specific ID assuming your first arg is an object
+    // ...
+  };
+
+  return memoizeFn(fn, { defaults, ...options });
+}
+
+// Use the new wrapper function
+const memoized = memoize(expensiveFunction);
+```
 
 ## Cache Expiration
 
