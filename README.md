@@ -158,7 +158,7 @@ Required `cache` object methods:
 
 ## Cache ID
 
-By default the first argument of the memoized function is used as the cache ID to store the result.
+By default the **first argument** of the memoized function is used as the cache ID to store the result.
 
 ```js
 const memoized = memoize(expensiveFunction);
@@ -220,6 +220,47 @@ const memoized = memoize(expensiveFunction, {
 memoized(/(.*)/);
 memoized(/(.*)/); // Cached
 memoized(/(.*)/); // Cached
+```
+
+### Cache ID Helpers
+
+The module `memoize-utils/helpers` provides some commonly used `cacheId` functions:
+
+- `all`: Get an ID from all the arguments casted to a string and then joined together.
+- `json`: Get a JSON string ID from the arguments (`JSON.stringify(args)`).
+- `anyOrder`: Get the same ID from a set of arguments passed in any order.
+
+Usage:
+
+```js
+import { all, json, anyOrder } from 'memoize-utils/helpers';
+
+// Use all the arguments as an ID
+// Note: does not work with objects (Arguments are casted to strings)
+// but it works with `RegExp` objects
+memoize(fn, { cacheId: all });
+
+// Use all the arguments as an ID including objects
+// Note: does not work with `RegExp` objects
+memoize(fn, { cacheId: json });
+
+// Use all the arguments as an ID but in any order
+// Note: does not work with objects (Arguments are casted to strings)
+memoize(fn, { cacheId: anyOrder });
+```
+
+You can create your own `memoize` wrapper function using a custom cache ID:
+
+```js
+import { memoize } from 'memoize-utils';
+import { anyOrder } from 'memoize-utils/helpers';
+
+export function memoizeAnyOrder(fn, options) {
+  return memoize(fn, { cacheId: anyOrder, ...options });
+}
+
+// Memoize functions using all of the arguments as a cache ID in any order
+const memoized = memoizeAnyOrder(fn);
 ```
 
 ## Rejected Promises

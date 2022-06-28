@@ -23,7 +23,7 @@ export function json(...args: readonly any[]): string {
 }
 
 /**
- * Get the same ID from a set of arguments no matter the order they're passed in.
+ * Get the same ID from a set of arguments passed in any order.
  *
  * The passed arguments are sorted and then casted to a string and then joined together.
  *
