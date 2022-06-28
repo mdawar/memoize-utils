@@ -1,6 +1,6 @@
 {
   "name": "memoize-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Memoization function and decorator.",
   "main": "dist/cjs/index.js",
