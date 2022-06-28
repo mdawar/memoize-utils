@@ -19,8 +19,23 @@ Can be used to:
 
 ## Installation
 
+#### Node.js
+
 ```
 $ npm i memoize-utils
+```
+
+#### Deno
+
+```ts
+// Memoize function
+import { memoize } from 'https://unpkg.com/memoize-utils@1.0.1/dist/esm/index.js';
+
+// Memoize decorator
+import { memoize } from 'https://unpkg.com/memoize-utils@1.0.1/dist/esm/decorator.js';
+
+// Cache ID helpers
+import { all, json, anyOrder } from 'https://unpkg.com/memoize-utils@1.0.1/dist/esm/helpers.js';
 ```
 
 ## Usage
