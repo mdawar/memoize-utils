@@ -195,4 +195,41 @@ describe('Custom cache instance', () => {
     expect(await c.count()).toEqual(20);
     expect(await c.count()).toEqual(20);
   });
+
+  test('Using instance property for the cache', () => {
+    class TestClass {
+      cache: Map<any, any>;
+
+      constructor(public index: number) {
+        this.cache = new Map();
+      }
+
+      @memoize({
+        cacheFromContext(this: any) {
+          return this.cache;
+        },
+      })
+      count() {
+        return this.index++;
+      }
+    }
+
+    const a = new TestClass(0);
+
+    expect(a.count()).toEqual(0);
+    expect(a.count()).toEqual(0);
+    expect(a.cache.size).toEqual(1);
+
+    const b = new TestClass(10);
+
+    expect(b.count()).toEqual(10);
+    expect(b.count()).toEqual(10);
+    expect(b.cache.size).toEqual(1);
+
+    const c = new TestClass(20);
+
+    expect(c.count()).toEqual(20);
+    expect(c.count()).toEqual(20);
+    expect(c.cache.size).toEqual(1);
+  });
 });
