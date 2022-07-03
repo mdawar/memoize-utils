@@ -19,7 +19,7 @@ Can be used to:
 
 ## Installation
 
-#### Node.js
+#### Node.js + Browsers
 
 ```
 $ npm i memoize-utils
@@ -305,6 +305,34 @@ function cacheFromContext() {
 }
 
 const memoized = memoize(expensiveFunction, { cacheFromContext });
+```
+
+Example using a `cache` instance property:
+
+```ts
+class ExampleClass {
+  cache: Map<any, any>;
+
+  constructor(public index: number) {
+    this.cache = new Map();
+  }
+
+  @memoize({
+    cacheFromContext(this: any) {
+      return this.cache;
+    },
+  })
+  count() {
+    return this.index++;
+  }
+}
+
+const instance = new ExampleClass(0);
+
+// The memoized method will be using the instance's `cache` property to store the results
+instance.count(); // 0
+instance.cache.size; // 1
+instance.cache.clear();
 ```
 
 ## Decorator Support
